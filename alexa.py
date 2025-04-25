@@ -137,4 +137,3 @@ while True:
                 
             response = handleFollowUpCommand(follow_up)
             getAlexaResponse(response)
-

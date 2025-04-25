@@ -7,6 +7,7 @@ import calendar
 import random
 import time 
 from word2number import w2n
+import re
 
 warnings.filterwarnings('ignore')
 
@@ -15,7 +16,7 @@ def recordAudioAsString():
     with sr.Microphone() as source:
         print("Listening...")
         r.adjust_for_ambient_noise(source)
-        audio = r.listen(source, timeout=5)
+        audio = r.listen(source, timeout=10)
 
     data = ''
     try:
@@ -103,6 +104,36 @@ def handle_math_calculation(text):
         
     except Exception as e:
         return f"I couldn't calculate that: {e}"
+def generate_random_number(text):
+    try:
+        text = text.lower()
+        if 'random' not in text or 'number' not in text:
+            return None
+            
+        between_pattern = re.search(r'between\s+(\d+)\s+and\s+(\d+)', text.lower())
+        if between_pattern:
+            start = int(between_pattern.group(1))
+            end = int(between_pattern.group(2))
+            return f"I generated the number {random.randint(start, end)} between {start} and {end}"
+        
+        from_to_pattern = re.search(r'from\s+(\d+)\s+to\s+(\d+)', text.lower())
+        if from_to_pattern:
+            start = int(from_to_pattern.group(1))
+            end = int(from_to_pattern.group(2))
+            return f"I generated the number {random.randint(start, end)} between {start} and {end}"
+
+        numbers = re.findall(r'\d+', text)
+        if len(numbers) >= 2:
+            start = int(numbers[0])
+            end = int(numbers[1])
+            if start > end:
+                start, end = end, start
+            return f"I generated the number {random.randint(start, end)} between {start} and {end}"
+
+        return f"I generated the number {random.randint(1, 100)} between 1 and 100"
+            
+    except Exception as e:
+        return f"Error while generating random number: {e}"
 print("Starting voice assistant. Say 'hey alexa' to activate.")
 while True:
     text = recordAudioAsString().lower().strip()
@@ -125,6 +156,9 @@ while True:
                 getAlexaResponse(response)
             elif 'what is' in command or '+' in command or '-' in command:
                 response = handle_math_calculation(command)
+                getAlexaResponse(response)
+            elif 'random' in command and 'number' in command:
+                response = generate_random_number(command)
                 getAlexaResponse(response)
             
         else:

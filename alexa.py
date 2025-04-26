@@ -173,6 +173,34 @@ def play_guess_the_number():
         else:
             getAlexaResponse("I didn't catch a number. Try saying it again.")
 
+def convert(text):
+    conversion_factors = {
+        ('km', 'm'): 1000,
+        ('m', 'km'): 0.001,
+        ('kg', 'g'): 1000,
+        ('g', 'kg'): 0.001,
+        ('cm', 'm'): 0.01,
+        ('m', 'cm'): 100
+    }
+    
+    text = text.lower()
+    
+    match = re.search(r'(\d+)\s*(\w+)\s+to\s+(\w+)', text)
+    if not match:
+        return "I didn't understand the conversion request."
+    
+    number = int(match.group(1))
+    from_unit = match.group(2)
+    to_unit = match.group(3)
+    
+    factor = conversion_factors.get((from_unit, to_unit))
+    if factor is None:
+        return "Sorry, I can't convert between those units."
+    
+    result = number * factor
+    return f"{number} {from_unit} is {result} {to_unit}."
+
+    return "Sorry, I couldn't understand the units."
 print("Starting voice assistant. Say 'hey alexa' to activate.")
 while True:
     text = recordAudioAsString().lower().strip()
@@ -205,6 +233,9 @@ while True:
             elif 'guess the number' in command:
                 response = play_guess_the_number()
                 getAlexaResponse(response)
+            elif 'convert' in command:
+                response = convert(command)
+                getAlexaResponse(response)
             
         else:
             print("Hey Alexa detected! Listening for command...")
@@ -218,11 +249,11 @@ while True:
             getAlexaResponse(response)
 
 #Ideas (useful):
-      #generátor náhodných čísel
-      #simple timers
-      #převádění měn, jednotek atd.
+      #generátor náhodných čísel 1
+      #simple timers - musela bych buď importovat nějaké zvuky, nebo by borka musela mluvit. možná že bych jí mohla dát jen relevantní time sleep na ten text
+      #převádění měn, jednotek atd. 1 jedinný problém je že to musí být celé v dictionary a taky způsob, jakým speech recognition rozpoznává různé jednotky - musím to vždy první testovat a to se mi moc nechce
 #Ideas (gamesky):
-      #guessování číslic - oboustranně :O
+      #guessování číslic - oboustranně :O  10
       #hangman
       #guessování slov
       #odpovídání na jednoduché otázky

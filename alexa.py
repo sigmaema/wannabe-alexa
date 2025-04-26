@@ -134,6 +134,45 @@ def generate_random_number(text):
             
     except Exception as e:
         return f"Error while generating random number: {e}"
+def play_guess_the_number():
+    word_to_number = {
+    'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+    'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+    'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14,
+    'fifteen': 15, 'sixteen': 16, 'seventeen': 17, 'eighteen': 18,
+    'nineteen': 19, 'twenty': 20
+}
+
+    number_to_guess = random.randint(1, 20)
+    getAlexaResponse("I'm thinking of a number between 1 and 20. Can you guess it?")
+    
+    while True:
+        guess_text = recordAudioAsString().lower()
+        
+        if 'stop' in guess_text:
+            return "Okay, stopping the game."
+
+        # Najdi číslo v řeči
+        numbers = re.findall(r'\d+', guess_text)
+        if numbers:
+            guess = int(numbers[0])
+            if guess == number_to_guess:
+                getAlexaResponse(f"Correct! The number was {number_to_guess}.")
+                getAlexaResponse("Do you want to play again?")
+                answer = recordAudioAsString().lower()
+                if 'yes' in answer:
+                    return play_guess_the_number()
+                else:
+                    return "Okay, exiting the game."
+            elif guess < number_to_guess:
+                getAlexaResponse("Too low. Try again.")
+            else:
+                getAlexaResponse("Too high. Try again.")
+        elif guess_text in word_to_number:
+            guess = word_to_number[guess_text]
+        else:
+            getAlexaResponse("I didn't catch a number. Try saying it again.")
+
 print("Starting voice assistant. Say 'hey alexa' to activate.")
 while True:
     text = recordAudioAsString().lower().strip()
@@ -142,8 +181,11 @@ while True:
         print("Exiting...")  
         break
         
-    if 'hey alexa' in text:
-        command = text.split('hey alexa', 1)[1].strip()
+    if 'hey alexa' in text or 'alexa' in text:
+        if 'hey alexa' in text:
+            command = text.split('hey alexa', 1)[1].strip()
+        elif 'alexa' in text:
+            command = text.split('alexa', 1)[1].strip()
         
         if command:
             print(f"Processing command: '{command}'")
@@ -160,6 +202,9 @@ while True:
             elif 'random' in command and 'number' in command:
                 response = generate_random_number(command)
                 getAlexaResponse(response)
+            elif 'guess the number' in command:
+                response = play_guess_the_number()
+                getAlexaResponse(response)
             
         else:
             print("Hey Alexa detected! Listening for command...")
@@ -171,3 +216,13 @@ while True:
                 
             response = handleFollowUpCommand(follow_up)
             getAlexaResponse(response)
+
+#Ideas (useful):
+      #generátor náhodných čísel
+      #simple timers
+      #převádění měn, jednotek atd.
+#Ideas (gamesky):
+      #guessování číslic - oboustranně :O
+      #hangman
+      #guessování slov
+      #odpovídání na jednoduché otázky

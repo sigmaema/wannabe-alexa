@@ -152,7 +152,6 @@ def play_guess_the_number():
         if 'stop' in guess_text:
             return "Okay, stopping the game."
 
-        # Najdi číslo v řeči
         numbers = re.findall(r'\d+', guess_text)
         if numbers:
             guess = int(numbers[0])
@@ -201,6 +200,32 @@ def convert(text):
     return f"{number} {from_unit} is {result} {to_unit}."
 
     return "Sorry, I couldn't understand the units."
+def set_timer(text):
+    text = text.lower()
+    
+    minutes = 0
+    seconds = 0
+
+    min_match = re.search(r'(\d+)\s*minute', text)
+    if min_match:
+        minutes = int(min_match.group(1))
+
+    sec_match = re.search(r'(\d+)\s*second', text)
+    if sec_match:
+        seconds = int(sec_match.group(1))
+    
+    if minutes == 0 and seconds == 0:
+        return "I didn't catch the timer duration."
+    
+    total_seconds = minutes * 60 + seconds
+    
+    getAlexaResponse(f"Setting a timer for {minutes} minutes and {seconds} seconds.")
+    
+    time.sleep(total_seconds)
+    
+    getAlexaResponse("Time's up!")
+    
+    return "Timer finished."
 print("Starting voice assistant. Say 'hey alexa' to activate.")
 while True:
     text = recordAudioAsString().lower().strip()
@@ -236,7 +261,9 @@ while True:
             elif 'convert' in command:
                 response = convert(command)
                 getAlexaResponse(response)
-            
+            elif 'timer' in command:
+                response = set_timer(command)
+                getAlexaResponse(response)
         else:
             print("Hey Alexa detected! Listening for command...")
             follow_up = getFollowUpCommand()

@@ -37,14 +37,6 @@ def getAlexaResponse(inputCommandText):
     else:
         print("No response to speak.")
 
-def greet(text):
-    inputGreetWords  = ['hi', 'hello']
-    outputGreetWords = ['Hello, how can I help you?', 'Hey, wassup']
-    for w in text.lower().split():
-        if w in inputGreetWords:
-            return random.choice(outputGreetWords)
-    return ''  
-
 def getDate():
     now = datetime.datetime.now()
     current_date = datetime.datetime.today()
@@ -77,7 +69,6 @@ def getFollowUpCommand():
     time.sleep(0.5) 
     return recordAudioAsString()
 def handle_math_calculation(text):
-    """Extract numbers and operation from text like 'what is 1 + 1'"""
     try:
         text = text.lower()
         if 'what is' not in text and 'calculate' not in text:
@@ -226,6 +217,54 @@ def set_timer(text):
     getAlexaResponse("Time's up!")
     
     return "Timer finished."
+def quiz():
+    questions = [
+        {"question":"In what year did the Chernobyl accident happen?", "answer":"1986"},
+        {"question":"What does IP stand for?", "answer":"internet protocol"},
+        {"question":"What is the HTTPS port?", "answer":"443"},
+        {"question":"In what year did the Czech institutions first connect to the internet?", "answer":"1993"},
+        {"question":"What is the maximum number of IP addresses in a LAN with a /24 subnet?", "answer":"254"},
+    ]
+    score = 0
+
+    for q in questions:
+        getAlexaResponse(q["question"])
+        user_answer = recordAudioAsString().lower()
+        
+        if q["answer"] in user_answer:
+            getAlexaResponse("Correct:")
+            score += 1
+        else:
+            getAlexaResponse(f"Wrong. The correct answer is {q['question']}.")
+
+    getAlexaResponse(f"End of quiz. You had {score} correct answers from {len(questions)} questions.")
+def handle_dumb_human_questions(text):
+    text = text.lower()
+    if 'pokemon' in text:
+        return "My favorite pokemon is Vulpix"
+    elif 'color' in text:
+        return "My favorite color is #e53e74"
+    elif 'drink' in text:
+        return "Definitely battery acid"
+    elif 'food' in text:
+        return "I love eating up your RAM, and i also love rasberry pi"
+    elif 'programming language' in text:
+        return "I mean you can pretty much guess it's python"
+    else:
+        return "Idk go ask ChatGPT or something"
+
+def tell_me_a_joke(text):
+    text = text.lower()
+    jokes = {
+        1:"Why do Java developers wear glasses? Because they don't C#",
+        2:"Why did the programmer quit his job? Because he didn't get arrays",
+        3:"Why was the math book sad? Because it had too many problems",
+        4:"How many programmers does it take to change a light bulb? None. It's a hardware problem",
+        5:"Why do programmers prefer dark mode? Because light attracts bugs",
+        6:"Why is it so hot in Apple headquarters? Because they don't have Windows"
+    }
+    random_key = random.choice(list(jokes.keys()))
+    return jokes[random_key]
 print("Starting voice assistant. Say 'hey alexa' to activate.")
 while True:
     text = recordAudioAsString().lower().strip()
@@ -249,7 +288,7 @@ while True:
             elif 'date' in command:
                 response = getDate()
                 getAlexaResponse(response)
-            elif 'what is' in command or '+' in command or '-' in command:
+            elif 'what is' in command and int in command:
                 response = handle_math_calculation(command)
                 getAlexaResponse(response)
             elif 'random' in command and 'number' in command:
@@ -264,6 +303,15 @@ while True:
             elif 'timer' in command:
                 response = set_timer(command)
                 getAlexaResponse(response)
+            elif 'trivia' in command or 'quiz' in command:
+                response = quiz(command)
+                getAlexaResponse(response)
+            elif 'favorite' in command:
+                response = handle_dumb_human_questions(command)
+                getAlexaResponse(response)
+            elif 'joke' in command:
+                response = tell_me_a_joke(command)
+                getAlexaResponse(response)
         else:
             print("Hey Alexa detected! Listening for command...")
             follow_up = getFollowUpCommand()
@@ -277,10 +325,10 @@ while True:
 
 #Ideas (useful):
       #generátor náhodných čísel 1
-      #simple timers - musela bych buď importovat nějaké zvuky, nebo by borka musela mluvit. možná že bych jí mohla dát jen relevantní time sleep na ten text
+      #simple timers 1
       #převádění měn, jednotek atd. 1 jedinný problém je že to musí být celé v dictionary a taky způsob, jakým speech recognition rozpoznává různé jednotky - musím to vždy první testovat a to se mi moc nechce
 #Ideas (gamesky):
       #guessování číslic - oboustranně :O  10
       #hangman
       #guessování slov
-      #odpovídání na jednoduché otázky
+      #odpovídání na jednoduché otázky 1

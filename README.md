@@ -12,7 +12,7 @@ Reaguje pouze na 'hey Alexa'
 
 1. Říct datum, když v textu zaznamená 'date'
 2. Zastavit program, když zaznamená 'stop'
-3. Velmi jednoduché matematické úkony (sčítání, odečítání, dělení; pouze s dvěma čísly)
+3. Velmi jednoduché matematické úkony, když v textu zaznamená 'what is' a integer (sčítání, odčítání, dělení; pouze s dvěma čísly, z nichž jedno musí být integer)
 4. Generovat náhodná čísla (defaultně 1-100, nebo v zadaném rozsahu), když zaznamená 'random' a 'number' v textu
 5. Setnout timer na určitý čas když zaznamená 'timer' v textu
 6. Zadávání jednoduchého kvízu, když v textu zaznamená 'trivia'(otázky a oodpovědi jsou napsány přímo v kódu, v dictionary)

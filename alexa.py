@@ -288,7 +288,7 @@ while True:
             elif 'date' in command:
                 response = getDate()
                 getAlexaResponse(response)
-            elif 'what is' in command and int in command:
+            elif 'what is' in command and any(char.isdigit() for char in command):
                 response = handle_math_calculation(command)
                 getAlexaResponse(response)
             elif 'random' in command and 'number' in command:
